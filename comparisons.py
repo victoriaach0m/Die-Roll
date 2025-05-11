@@ -149,6 +149,14 @@ def blackjack_eval(state):
     return player_sum - dealer_up
 
 
+HYPOTHESES = [
+    "In small state spaces (die-roll), tabular Q-learning converges faster than minimax with hand-tuned eval.",
+    "In moderate state spaces (Blackjack), approximate Q-learning with a better feature set outperforms tabular Q-learning given fixed training.",
+    "Minimax evaluation functions approach tabular Q-learning performance only after multiple revision iterations."
+]
+
+
+
 if 1 in compsToRun:
     agent = alg.RuleBasedAgent()
     wins_rule = 0
