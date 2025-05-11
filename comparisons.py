@@ -218,5 +218,33 @@ def evaluate_agent(game, agent, trials=1000):
             wins += 1
     return wins / trials
 
+# Comparisons
+if __name__ == "__main__":
+    games = {"die": DieRollGame(), "bj": BlackjackGame()}
 
+    for name, game in games.items():
+        print(f"{name.upper()} GAME: ")
+
+        # Tabular Q-learning with metrics
+        tq, results = train_tabular_q(game, track_metrics=True)
+        win_tq = evaluate_agent(game, tq)
+        print(f"Tabular Q-Learning win rate: {win_tq:.2f}")
+        
+        
+
+        if name == "bj":
+            # Approximate Q-learning
+            feat = BlackjackFeatureExtractor()
+            aq = train_approx_q(game, feat)
+            win_aq = evaluate_agent(game, aq)
+            print(f"Approx Q-Learning win rate: {win_aq:.2f}")
+
+            # Minimax
+            mm = MinimaxAgent(eval_fn=blackjack_eval, max_depth=2)
+            win_mm = evaluate_agent(game, mm)
+            print(f"MinimaxAgent win rate: {win_mm:.2f}")
+
+    print("\nHypotheses:")
+    for h in HYPOTHESES:
+        print(f"- {h}")
 
