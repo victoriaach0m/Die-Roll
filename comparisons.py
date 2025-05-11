@@ -21,7 +21,35 @@ class DieRollGame:
         done = my_score >= self.target
         reward = 1 if done else 0
         next_state = (opp_score, my_score)
-        return next_state, reward, doneS
+        return next_state, reward, done
+        
+class BlackjackGame:
+    def __init__(self):
+        self.cards = [1,2,3,4,5,6,7,8,9,10,10,10,10]
+
+    def draw(self):
+        return random.choice(self.cards)
+
+    def reset(self):
+        player = [self.draw(), self.draw()]
+        dealer = [self.draw()]
+        return (sum(player), dealer[0])
+
+    def step(self, state, action):
+        player_sum, dealer_up = state
+        if action == 1:  
+            player_sum += self.draw()
+            if player_sum > 21:
+                return None, -1, True
+            return (player_sum, dealer_up), 0, False
+        dealer_total = dealer_up
+        while dealer_total < 17:
+            dealer_total += self.draw()
+        if dealer_total > 21 or player_sum > dealer_total:
+            return None, 1, True
+        elif player_sum < dealer_total:
+            return None, -1, True
+        return None, 0, True
 
 compsToRun = [0, 1]
 
