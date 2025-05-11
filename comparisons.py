@@ -106,21 +106,46 @@ class ApproxQLearningAgent(QLearningAgent):
         features = self.feat.extract(state, action)
         self.weights += self.alpha * error * features
 
+# Minimax Agent 
+class MinimaxAgent:
+    def __init__(self, eval_fn, max_depth=2):
+        self.eval_fn = eval_fn
+        self.max_depth = max_depth
 
-if 0 in compsToRun:
-    wins_random = 0
-    draws_random = 0
-    losses_random = 0
-    for _ in range(100):
-        game = prb.Game(prb.DieRollGame(), alg.RandomAgent(), alg.RandomAgent(), False)
-        winner = game.playGame()
-        if winner == 0:
-            wins_random += 1
-        elif winner == 1:
-            losses_random += 1
+    def select_action(self, game, state):
+        _, action = self._minimax(game, state, 0, -np.inf, np.inf, True)
+        return action
+
+    def _minimax(self, game, state, depth, alpha, beta, maximizing):
+        if depth == self.max_depth or getattr(game, 'is_terminal', lambda s: False)(state):
+            return self.eval_fn(state), None
+
+        best_action = None
+        if maximizing:
+            value = -np.inf
+            for a in [0,1] if isinstance(game, BlackjackGame) else [0]:
+                next_s, r, done = game.step(state, a)
+                v, _ = (r, None) if done else self._minimax(game, next_s, depth+1, alpha, beta, False)
+                if v > value:
+                    value, best_action = v, a
+                alpha = max(alpha, value)
+                if alpha >= beta:
+                    break
+            return value, best_action
         else:
-            draws_random += 1
-    print(f"Random vs. Random - Wins: {wins_random}, Losses: {losses_random}, Draws: {draws_random}")
+            value = np.inf
+            for a in [0,1] if isinstance(game, BlackjackGame) else [0]:
+                next_s, r, done = game.step(state, a)
+                v, _ = (r, None) if done else self._minimax(game, next_s, depth+1, alpha, beta, True)
+                if v < value:
+                    value, best_action = v, a
+                beta = min(beta, value)
+                if beta <= alpha:
+                    break
+            return value, best_action
+
+
+
 
 if 1 in compsToRun:
     agent = alg.RuleBasedAgent()
