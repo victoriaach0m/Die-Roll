@@ -50,8 +50,30 @@ class BlackjackGame:
         elif player_sum < dealer_total:
             return None, -1, True
         return None, 0, True
+        
+# Tabular Q-Learning Agent
+class QLearningAgent:
+    def __init__(self, actions, alpha=0.1, gamma=0.99, epsilon=0.1):
+        self.q = {}
+        self.actions = actions
+        self.alpha = alpha
+        self.gamma = gamma
+        self.epsilon = epsilon
 
-compsToRun = [0, 1]
+    def get_q(self, state, action):
+        return self.q.get((state, action), 0.0)
+
+    def select_action(self, state):
+        if random.random() < self.epsilon:
+            return random.choice(self.actions)
+        q_vals = [self.get_q(state, a) for a in self.actions]
+        return self.actions[int(np.argmax(q_vals))]
+
+    def update(self, state, action, reward, next_state, done):
+        max_next = 0 if done else max(self.get_q(next_state, a) for a in self.actions)
+        old = self.get_q(state, action)
+        self.q[(state, action)] = old + self.alpha * (reward + self.gamma * max_next - old)
+
 
 if 0 in compsToRun:
     wins_random = 0
