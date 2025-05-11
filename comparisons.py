@@ -144,7 +144,9 @@ class MinimaxAgent:
                     break
             return value, best_action
 
-
+def blackjack_eval(state):
+    player_sum, dealer_up = state
+    return player_sum - dealer_up
 
 
 if 1 in compsToRun:
