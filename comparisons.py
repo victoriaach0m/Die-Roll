@@ -202,6 +202,23 @@ def train_approx_q(game, feature_extractor, episodes=5000):
     return agent
 
 
+def evaluate_agent(game, agent, trials=1000):
+    wins = 0
+    for _ in range(trials):
+        state = game.reset()
+        done = False
+        while not done:
+            if isinstance(agent, MinimaxAgent):
+                a = agent.select_action(game, state)
+            else:
+                a = agent.select_action(state)
+            next_s, r, done = game.step(state, a)
+            state = next_s
+        if r == 1:
+            wins += 1
+    return wins / trials
+
+
 if 1 in compsToRun:
     agent = alg.RuleBasedAgent()
     wins_rule = 0
