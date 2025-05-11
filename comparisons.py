@@ -156,6 +156,51 @@ HYPOTHESES = [
 ]
 
 
+def train_tabular_q(game, episodes=5000, track_metrics=False):
+    actions = [0,1] if isinstance(game, BlackjackGame) else [0]
+    agent = QLearningAgent(actions)
+    
+    total_steps = 0
+    total_time = 0
+    results = []
+
+    for _ in range(episodes):
+        steps = 0
+        start = time.time()
+        
+        state = game.reset()
+        done = False
+        while not done:
+            a = agent.select_action(state)
+            next_s, r, done = game.step(state, a)
+            agent.update(state, a, r, next_s, done)
+            state = next_s
+            steps += 1
+
+        total_steps += steps
+        total_time += time.time() - start
+        results.append(1 if r > 0 else 0)
+
+    if track_metrics:
+        print(f"Avg steps per episode: {total_steps / episodes:.2f}")
+        print(f"Avg time per episode: {total_time / episodes:.4f} sec")
+        return agent, results
+    else:
+        return agent
+
+def train_approx_q(game, feature_extractor, episodes=5000):
+    actions = [0,1]
+    agent = ApproxQLearningAgent(actions, feature_extractor)
+    for _ in range(episodes):
+        state = game.reset()
+        done = False
+        while not done:
+            a = agent.select_action(state)
+            next_s, r, done = game.step(state, a)
+            agent.update(state, a, r, next_s, done)
+            state = next_s
+    return agent
+
 
 if 1 in compsToRun:
     agent = alg.RuleBasedAgent()
