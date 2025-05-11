@@ -74,6 +74,17 @@ class QLearningAgent:
         old = self.get_q(state, action)
         self.q[(state, action)] = old + self.alpha * (reward + self.gamma * max_next - old)
 
+class BlackjackFeatureExtractor:
+    def __init__(self):
+        self.num_features = 3
+
+    def extract(self, state, action):
+        player_sum, dealer_up = state
+        return np.array([
+            player_sum / 21.0,
+            dealer_up / 10.0,
+            1.0 if player_sum > 17 else 0.0
+        ])
 
 if 0 in compsToRun:
     wins_random = 0
