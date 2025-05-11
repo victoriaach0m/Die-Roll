@@ -6,6 +6,8 @@ from collections import defaultdict
 random.seed(42)
 np.random.seed(42)
 num_games = 1000
+
+
 # Game Defs
 class DieRollGame:
     def __init__(self, target=10):
@@ -85,6 +87,25 @@ class BlackjackFeatureExtractor:
             dealer_up / 10.0,
             1.0 if player_sum > 17 else 0.0
         ])
+# Approximate Q-Learning Agent
+class ApproxQLearningAgent(QLearningAgent):
+    def __init__(self, actions, feature_extractor, alpha=0.01, gamma=0.99, epsilon=0.1):
+        super().__init__(actions, alpha, gamma, epsilon)
+        self.feat = feature_extractor
+        self.weights = np.zeros(self.feat.num_features)
+
+    def get_q(self, state, action):
+        features = self.feat.extract(state, action)
+        return np.dot(self.weights, features)
+
+    def update(self, state, action, reward, next_state, done):
+        pred = self.get_q(state, action)
+        max_next = 0 if done else max(self.get_q(next_state, a) for a in self.actions)
+        target = reward + self.gamma * max_next
+        error = target - pred
+        features = self.feat.extract(state, action)
+        self.weights += self.alpha * error * features
+
 
 if 0 in compsToRun:
     wins_random = 0
