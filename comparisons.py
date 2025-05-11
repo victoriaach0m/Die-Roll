@@ -1,5 +1,27 @@
-import problems as prb
-import algorithms as alg
+import random
+import numpy as np
+import time
+from collections import defaultdict
+
+random.seed(42)
+np.random.seed(42)
+num_games = 1000
+# Game Defs
+class DieRollGame:
+    def __init__(self, target=10):
+        self.target = target
+
+    def reset(self):
+        return (0, 0)
+
+    def step(self, state, action):
+        my_score, opp_score = state
+        roll = random.randint(1, 6)
+        my_score += roll
+        done = my_score >= self.target
+        reward = 1 if done else 0
+        next_state = (opp_score, my_score)
+        return next_state, reward, doneS
 
 compsToRun = [0, 1]
 
