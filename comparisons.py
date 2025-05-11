@@ -219,20 +219,4 @@ def evaluate_agent(game, agent, trials=1000):
     return wins / trials
 
 
-if 1 in compsToRun:
-    agent = alg.RuleBasedAgent()
-    wins_rule = 0
-    draws_rule = 0
-    losses_rule = 0
-    for _ in range(100):
-        game = prb.Game(prb.DieRollGame(), agent, alg.RandomAgent(), False)
-        winner = game.playGame()
-        if winner == 0:
-            wins_rule += 1
-        elif winner == 1:
-            losses_rule += 1
-        else:
-            draws_rule += 1
-        agent.update_results(winner)
-    print(f"Rule vs. Random - Wins: {wins_rule}, Losses: {losses_rule}, Draws: {draws_rule}")
-    print(f"Rule based agent total wins: {agent.wins}, losses: {agent.losses}, draws: {agent.draws}")
+
